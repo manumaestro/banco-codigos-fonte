@@ -3,7 +3,7 @@ import { getAll, getById, create, update, remove } from "../controllers/registro
 
 const router = express.Router();
 
-router.get("/", getAllRegistros);
+router.get("/", getAll);
 router.get("/:id", getById);
 router.post("/", create);
 router.put("/:id", update);

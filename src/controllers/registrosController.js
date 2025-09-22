@@ -1,7 +1,29 @@
 import registros from "../models/dados.js";
 
+export const getAll = (req, res) => {
+  let resultado = registros;
 
-// ✅ Buscar todos os registros
+  const { linguagem, categoria, licenca, estrelasMin, } = req,query;
+
+  if (linguagem) {
+    resultado = resuldado.filter(r => r.linguagem.toLowerCase() === linguagem.toLowerCase());
+  }
+  if (categoria) {
+    resultado = resuldado.filter(r => r.categoria.toLowerCase() === categoria.toLowerCase());
+  }
+  if (licenca) {
+    resultado = resuldado.filter(r => r.licenca.toLowerCase() === licenca.toLowerCase());
+  }
+  if (estrelasMin) {
+    resultado = resuldado.filter(r => r.estrelas >= parseInt(estrelasMin));
+  }
+  
+  res.status(200).json({
+    total: resultado.length,
+    registros: resultado
+  })
+};
+
 export const getAll = (req, res) => {
   res.status(200).json({
     total: registros.length,
@@ -10,135 +32,86 @@ export const getAll = (req, res) => {
 };
 
 // ✅ Buscar por ID
+
 export const getById = (req, res) => {
   const id = parseInt(req.params.id);
   const registro = registros.find(p => p.id === id);
 
   if (!registro) {
-    return res.status(404).json({
-      message: "Registro não encontrado! ❌"
-    });
+    return res.status (404).json({ message: "Registro não encontrado!"});
   }
 
   res.status(200).json(registro);
 };
 
-// ✅ Criar novo registro
-export const create = (req, res) => {
-  const{ id, nome, linguagem, autor, licenca, estrelas, forks, categoria, dataAtualizacao } = req.body;
-
-  if (!id || !nome || !linguagem || !autor || licenca || !estrelas || !forks || !categoria || !dataAtualizacao) {
-    return res.status(400).json({
-      message: "Preencha todos os campos! 📜"
-    });
+  export const create = (req, res) => {
+    const { nome, linguagem ,autor, licenca, estrelas, forks, categoria, dataAtualizacao } = req.body;
   }
-
-
-//Número de estrelas não pode ser negativo
-  if (estrelas < 0) {
-    return res.status(400).json({ message: "O número de estrelas não pode ser negativo" });
+  
+  if (!nome || !linguagem|| !autor || !licenca || estrelas == null || forks == null || !categoria || !dataAtualizacao) {
+    return res.status(400).json({ message: "Preencha todos os campos!"});
   }
-
-  // Nome do projeto deve ter pelo menos 2 caracteres
-  if (grupo.toLowerCase() === "2 caracteres" === true) {
-    return res.status(400).json({
-      message: "O nome do projeto deve ter pelo menos 2 caracteres"
-    });
-  }
-
+  
   const novoRegistro = {
     id: registros.length + 1,
-    id,
     nome,
     linguagem,
     autor,
     licenca,
-    estrelas,
     forks,
     categoria,
     dataAtualizacao
   };
-
+  
   registros.push(novoRegistro);
-
+  
   res.status(201).json({
-    message: "Novo registro adicionado com sucesso! ",
-    personagem: nonoRegistro
+    message: "Novo registro adicionado com sucesso!",
+    registro: novoRegistro
   });
 };
 
-// ✅ Atualizar registros existentes
-export const update = (req, res) => {
-  const id = parseInt(req.params.id);
-  const { id, nome, linguagem, autor, licenca, estrelas, forks, categoria, dataAtualizacao } = req.body;
 
-  if (isNaN(id)) {
-    return res.status(400).json({
-      success: false,
-      message: "O id deve ser um número válido."
-    });
+  const registro = registros.find(r => r.id === id);
+  if (!registro) {
+    return res.status(404).json({ messae: "Registro com id ${id} não encontrado"});
   }
 
-  const registroExiste = registros.find(p => p.id === id);
-  if (!registroExiste) {
-    return res.status(404).json({
-      success: false,
-      message: `O registro com o id: ${id} não existe.`
-    });
+  if (estrelas != null && estrelas < 0) {
+    return res.status(400).json({ message: "O número de estrelas não pode ser negativo!"})
   }
 
-  const registrosAtualizados = registros.map(registro =>
-    registro.id === id
-      ? {
-          ...id,
-          ...(nome && { nome }),
-          ...(linguagem && { linguagem }),
-          ...(autor && { autor }),
-          ...(licenca && { licenca }),
-          ...(estrelas && { estrelas }),
-          ...(forks && { forks }),
-          ...(categoria && { categoria }),
-          ...(dataAtualizacao && { dataAtualizacao }),
-        }
-      : registro
-  );
+  if (nome && nome.trim().length < 2) {
+    return res.status(400).json({ message: "O nome do projeto deve ter pelo menos 2 caracteres"});
+  }
 
-  registros.splice(0, registros.length, ...registrosAtualizados);
+  registro.nome = nome ?? registro.nome;
+  registro.linguagem = linguagem ?? registro.linguagem;
+  registro.autor = autor ?? registro.autor;
+  registro.licenca = licenca ?? registro.licenca;
+  registro.estrelas = estrelas ?? registro.estrelas;
+  registro.forks = forks ?? registro.forks;
+  registro.categorias = categorias ?? registro.categorias;
+  registro.dataAtualizacao = dataAtualizacao ?? registro.dataAtualizacao;
 
-  const registrosAtualizados = registros.find(p => p.id === id);
   res.status(200).json({
-    success: true,
-    message: "Registros atualizados com sucesso",
-    registro: registrosAtualizados
+    message: "Registro atualizado com sucesso!",
+    registro
   });
-};
 
-// ✅ Remover registros
+  // Remover Registros
+
 export const remove = (req, res) => {
-  const { id } = req.params;
+  const id  = parseInt(req.params.id);
 
-  if (isNaN(id)) {
-    return res.status(400).json({
-      success: false,
-      message: "O id deve ser válido"
-    });
+  const index = registros.findIndex(r => r.id === id);
+  if (index === -1) {
+    return res.status(404).json({ message: "Registro não encontrado!"});
   }
 
-  const idParaApagar = parseInt(id);
-  const registrosParaRemover = registros.find(p => p.id === idParaApagar);
+  registros.splice(index, 1);
 
-  if (!registrosParaRemover) {
-    return res.status(404).json({
-      success: false,
-      message: "Registro não encontrado"
-    });
-  }
-
-  const registrosFiltrados = registros.filter(p => p.id !== idParaApagar);
-  registros.splice(0, registros.length, ...registrosFiltrados);
-
-  return res.status(200).json({
-    success: true,
-    message: "O registro foi removido com sucesso! 🗑️"
+  res.status(200).json({
+    message: "Registro removido ocm sucesso"
   });
 };

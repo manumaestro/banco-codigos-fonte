@@ -1,8 +1,7 @@
 import express from "express";
-import codigosRoutes from "./routes/registrosRoutes.js";
+import registrosRoutes from "./routes/registrosRoutes.js";
 
 const app = express();
-
 app.use(express.json());
 
 app.use("/registros", registrosRoutes);
