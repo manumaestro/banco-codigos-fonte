@@ -3,7 +3,7 @@ import registros from "../models/dados.js";
 export const getAll = (req, res) => {
   let resultado = registros;
 
-  const { linguagem, categoria, licenca, estrelasMin, } = req,query;
+  const { linguagem, categoria, licenca, estrelasMin, } = req.query;
 
   if (linguagem) {
     resultado = resuldado.filter(r => r.linguagem.toLowerCase() === linguagem.toLowerCase());
@@ -24,12 +24,6 @@ export const getAll = (req, res) => {
   })
 };
 
-export const getAll = (req, res) => {
-  res.status(200).json({
-    total: registros.length,
-    registros
-  });
-};
 
 // ✅ Buscar por ID
 
@@ -69,12 +63,10 @@ export const getById = (req, res) => {
     message: "Novo registro adicionado com sucesso!",
     registro: novoRegistro
   });
-};
-
 
   const registro = registros.find(r => r.id === id);
   if (!registro) {
-    return res.status(404).json({ messae: "Registro com id ${id} não encontrado"});
+    return res.status(404).json({ message: "Registro com id ${id} não encontrado"});
   }
 
   if (estrelas != null && estrelas < 0) {
