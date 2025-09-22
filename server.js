@@ -1,20 +1,16 @@
 import express from "express";
-import codigosRoutes from "./routes/codigosRoutes.js";
+import codigosRoutes from "./routes/registrosRoutes.js";
 
 const app = express();
 
-// Middleware para aceitar JSON
 app.use(express.json());
 
-// Rotas principais
-app.use("/personagens", codigosRoutes);
+app.use("/registros", registrosRoutes);
 
-// Rota inicial
 app.get("/", (req, res) => {
-  res.send("🧛 The Vampire Diaries API - Bem-vindo(a) a Mystic Falls!");
+  res.send("Servidor funcionando, reposiório para organização de projetos de código aberto!");
 });
 
-// Porta do servidor
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`🚀 Servidor rodando em http://localhost:${PORT}`);
